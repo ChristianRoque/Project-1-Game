@@ -116,32 +116,48 @@ let jumped = false
 let slashed = false
 
 
-// const enemy = {
+let myEnemies = []
 
 
-//     animation: [
-//     ],
-
-//     w: 200,
-//     h: 200,
-//     x: 200,
-//     y: 100,
-
-//     frame: 0,
-
-//     draw: function () {
-//         let enemy = this.animation[this.frame]
-//         ctx.drawImage(enemySprite, enemy.sX, enemy.sY, this.w, this.h, this.x, this.y, 300,300 )
-//     },
 
 
-//     update: function () {
-//         this.period = state.current == state.getReady ? 10 : 10;
-//         this.frame += frames % this.period == 0 ? 1 : 0;
-//         this.frame = this.frame % 10;
-//     }
 
-// }
+const enemy = {
+
+
+    animation: [ {sX:0,sY: 0} ],
+    w: 40,
+    h: 40,
+    x: 200,
+    y: 100,
+
+    frame: 0,
+
+    draw: function () {
+        let enemy = arr[0]
+        ctx.drawImage(knight,0 , 0, this.w, this.h, enemy.x , enemy.y , 60, 80)
+    },
+
+
+    right: function () {
+        arr[0].x -= 2
+    },
+
+    left: function() {
+        arr[0].x += 2
+    }
+
+    // update: function () {
+    //     this.period = state.current == state.getReady ? 10 : 10;
+    //     this.frame += frames % this.period == 0 ? 1 : 0;
+    //     this.frame = this.frame % 10;
+    // },
+
+    // spawn: function() {
+    // }
+
+}
+
 
 
 const hero = {
@@ -266,11 +282,15 @@ const hero = {
         this.x += 3
     },
 
-    // collision: function() {
-    //     if(this.x + this.w > enemy.x && this.x < enemy.w && this.y + this.w > enemy.y) {
-    //         this.x -= 20;
-    //     }
-    // },
+    collision: function() {
+        if(this.x + 25 > arr[0].x && this.x < arr[0].x + 25 && this.y + this.h > arr[0].y && this.y < arr[0].y + 25 ) {  
+            arr.shift()
+            this.x -= 30;
+            arr[0].x += 30
+            console.log(arr.length)
+        }
+
+    },
 
     update: function () {
         this.period = state.current == state.getReady ? 10 : 10;
@@ -341,6 +361,7 @@ function draw() {
 
     }
     // enemy.draw()
+    enemy.draw()
     hero.draw()
     getReady.draw()
     gameOver.draw()
@@ -368,6 +389,7 @@ function loop() {
 
     else if (controller.right) {
         hero.right()
+        enemy.right()
         background.x -= 3;
         if (jumped == false) {
             walkingSFX.play()
@@ -376,6 +398,7 @@ function loop() {
 
     else if (controller.left) {
         hero.left()
+        enemy.left()
         background.x += 3;
         if (jumped == false) {
             walkingSFX.play()
@@ -398,9 +421,93 @@ function loop() {
 
     }
 
+    hero.collision()
+
     requestAnimationFrame(loop)
 }
 
 window.requestAnimationFrame(loop);
 window.addEventListener("keydown", controller.keyListener)
 window.addEventListener("keyup", controller.keyListener);
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+// var myenemies = [];
+
+
+
+//    crashWith: function(obs) {
+//        if (this.x + 20 > obs.x && this.x < obs.x + obs.width && this.y + 20 > obs.y) {
+//            myObstacles.pop();
+//            player.x -= 5
+//            if (player.x == 0) {
+//                console.log(myObstacles)
+//                alert(Enemies Killed)
+//            }
+//        }
+//    }
+
+// function obstacle() {
+   
+  
+   
+   
+  
+// let gamearea = {
+
+//    start: function() {
+
+//            // myObstacles.push(new obstacle());
+//        this.frame = 0;
+//        this.interval = setInterval(this.updateGameArea, 5)
+//        window.addEventListener("keydown", jump);
+//    },
+//    updateGameArea: function() {
+    //    for (i = 0; i < myObstacles.length; i++) {
+    //        if (player.crashWith(myObstacles[i])) {
+    //            gamearea.stop();
+    //            return;
+    //        }
+    //    }
+//        gamearea.clear();
+//        if (enemyArr.length == 0) {
+//            myObstacles.push(new obstacle());
+//            console.log(myObstacles)
+//            gamearea.frame = 1;
+//        }
+//        for (i = 0; i < myObstacles.length; i++) {
+//            myObstacles[i].x -= 4;
+//            myObstacles[i].draw();
+//        }
+//    },
+
+// }
+
+
+//  spawn: function () {
+//     if (x conditional is met) {
+//         myObstacles.push(new obstacle());
+//         console.log(myObstacles)
+//         gap = randGap();
+//         gamearea.frame = 1;
+//     }
+//  }
+
+
+
+
+
+
+
+
+
+
+
+let arr = []
+
+for (let i = 0; i < 100; i++) {
+    arr.push({x: i + 800, y: 360, health: 5 + i})
+}
+
+
