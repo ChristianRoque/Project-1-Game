@@ -317,7 +317,6 @@ const hero = {
     isAlive: function () {
         if (this.health <= 0) {
             state.current = 2
-
             setTimeout(function () {
                 hero.w = 0
                 hero.h = 0
