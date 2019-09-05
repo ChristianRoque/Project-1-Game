@@ -50,7 +50,7 @@ slashSFX.volume = 0.0
 slashSFX.src = "img/sword-sfx.mp3"
 
 const music = new Audio()
-music.volume = 0.0
+music.volume = 0.3
 music.src = "img/Dark Cloud Soundtrack - The Village Festival.mp3"
 
 // game current 
