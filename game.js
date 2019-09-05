@@ -1,6 +1,87 @@
+// let nbDrop = 858;
+
+// function randRange(minNum, maxNum) {
+//     return Math.floor(Math.random() * (maxNum - minNum + 1) + minNum)
+// }
+
+// function createRain() {
+//     for (i = 0; i < nbDrop; i++) {
+//         let dropLeft = randRange(0, 1600);
+//         let dropTop = randRange(-1000, 1400);
+//         $('.rain').append('<div class="drop" id="drop' + i + '"></div>');
+//         $('#drop' + i).css('left', dropLeft);
+//         $('#drop' + i).css('top', dropTop);
+//     }
+// }
+
+$(document).ready(function() {
+    var canvas = $('#canvasRain')[0];
+    canvas.width = 600;
+    canvas.height = 430;
+
+    if (canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+        var w = canvas.width;
+        var h = canvas.height;
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+        ctx.lineWidth = 1;
+        ctx.lineCap = 'round';
+
+
+        var init = [];
+        var maxParts = 101;
+        for (var a = 0; a < maxParts; a++) {
+            init.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                l: Math.random() * 1,
+                xs: -4 + Math.random() * 4 + 2,
+                ys: Math.random() * 10 + 10
+            })
+        }
+
+        var particles = [];
+        for (var b = 0; b < maxParts; b++) {
+            particles[b] = init[b];
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, w, h);
+            for (var c = 0; c < particles.length; c++) {
+                var p = particles[c];
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p.x + p.l * p.xs, p.y + p.l * p.ys);
+                ctx.stroke();
+            }
+            move();
+        }
+
+        function move() {
+            for (var b = 0; b < particles.length; b++) {
+                var p = particles[b];
+                p.x += p.xs;
+                p.y += p.ys;
+                if (p.x > w || p.y > h) {
+                    p.x = Math.random() * w;
+                    p.y = -20;
+                }
+            }
+        }
+
+        setInterval(draw, 50);
+
+    }
+});
+
+
+
+
 //  select canvas 
 const cvs = document.getElementById("canvas")
 const ctx = cvs.getContext("2d")
+
+
 
 //  game vars and const 
 let running = true
@@ -48,7 +129,7 @@ const state = {
     over: 2
 }
 
-document.addEventListener("click", function (e) {
+document.addEventListener("click", function(e) {
     switch (state.current) {
         case state.getReady:
             state.current = state.game;
@@ -86,23 +167,23 @@ let controller = {
     left: false,
     right: false,
     up: false,
-    keyListener: function (event) {
+    keyListener: function(event) {
 
         var key_state = (event.type == "keydown") ? true : false;
 
         switch (event.keyCode) {
 
-            case 37:// left key
+            case 37: // left key
                 controller.left = key_state;
                 break;
-            case 38:// up key
+            case 38: // up key
                 controller.up = key_state;
                 jumpingSFX.play()
                 break;
-            case 39:// right key
+            case 39: // right key
                 controller.right = key_state;
                 break;
-            case 32:// spacebar
+            case 32: // spacebar
                 controller.space = key_state;
                 break;
         }
@@ -149,39 +230,44 @@ const hero = {
 
     animation: [
         [{ sX: 50, sY: 40 },
-        { sX: 100, sY: 40 },
-        { sX: 150, sY: 40 },
-        { sX: 200, sY: 40 },
-        { sX: 250, sY: 40 },
-        { sX: 300, sY: 40 }],
+            { sX: 100, sY: 40 },
+            { sX: 150, sY: 40 },
+            { sX: 200, sY: 40 },
+            { sX: 250, sY: 40 },
+            { sX: 300, sY: 40 }
+        ],
 
         [{ sX: 0, sY: 0 },
-        { sX: 50, sY: 0 },
-        { sX: 100, sY: 0 },
-        { sX: 150, sY: 0 },
-        { sX: 100, sY: 0 },
-        { sX: 50, sY: 0 }],
+            { sX: 50, sY: 0 },
+            { sX: 100, sY: 0 },
+            { sX: 150, sY: 0 },
+            { sX: 100, sY: 0 },
+            { sX: 50, sY: 0 }
+        ],
 
         [{ sX: 150, sY: 80 },
-        { sX: 150, sY: 80 },
-        { sX: 150, sY: 80 },
-        { sX: 200, sY: 80 },
-        { sX: 200, sY: 80 },
-        { sX: 200, sY: 80 }],
+            { sX: 150, sY: 80 },
+            { sX: 150, sY: 80 },
+            { sX: 200, sY: 80 },
+            { sX: 200, sY: 80 },
+            { sX: 200, sY: 80 }
+        ],
 
         [{ sX: 285, sY: 40 },
-        { sX: 235, sY: 40 },
-        { sX: 185, sY: 40 },
-        { sX: 135, sY: 40 },
-        { sX: 85, sY: 40 },
-        { sX: 35, sY: 40 }],
+            { sX: 235, sY: 40 },
+            { sX: 185, sY: 40 },
+            { sX: 135, sY: 40 },
+            { sX: 85, sY: 40 },
+            { sX: 35, sY: 40 }
+        ],
 
         [{ sX: 150, sY: 480 },
-        { sX: 300, sY: 480 },
-        { sX: 0, sY: 520 },
-        { sX: 50, sY: 520 },
-        { sX: 150, sY: 480 },
-        { sX: 300, sY: 480 }]
+            { sX: 300, sY: 480 },
+            { sX: 0, sY: 520 },
+            { sX: 50, sY: 520 },
+            { sX: 150, sY: 480 },
+            { sX: 300, sY: 480 }
+        ]
 
 
     ],
@@ -201,29 +287,21 @@ const hero = {
     chests: 0,
     heath: 5,
 
-    draw: function () {
+    draw: function() {
 
         if (controller.up && this.y < 340) {
             let hero = this.animation[2][this.frame]
             ctx.drawImage(knight, hero.sX, hero.sY, this.w, this.h, this.x, this.y, 60, 80)
-        }
-
-        else if (controller.right) {
+        } else if (controller.right) {
             let hero = this.animation[0][this.frame]
             ctx.drawImage(knight, hero.sX, hero.sY, this.w, this.h, this.x, this.y, 60, 80)
-        }
-
-        else if (controller.left) {
+        } else if (controller.left) {
             let hero = this.animation[3][this.frame]
             ctx.drawImage(knightInverse, hero.sX, hero.sY, this.w, this.h, this.x, this.y, 60, 80)
-        }
-
-        else if (controller.space) {
+        } else if (controller.space) {
             let hero = this.animation[4][this.frame]
             ctx.drawImage(knight, hero.sX, hero.sY, 60, 40, this.x, this.y - 20, 75, 95)
-        }
-
-        else {
+        } else {
             let hero = this.animation[1][this.frame];
             ctx.drawImage(knight, hero.sX, hero.sY, this.w, this.h, this.x, this.y, 60, 80)
         }
@@ -249,20 +327,20 @@ const hero = {
     },
 
 
-    jumping: function () {
-        this.speed = - this.jump
+    jumping: function() {
+        this.speed = -this.jump
         jumped = true
     },
 
-    right: function () {
+    right: function() {
         this.x += 0.5
     },
 
-    left: function () {
+    left: function() {
         this.x -= 3
     },
 
-    slash: function () {
+    slash: function() {
         this.x += 3
     },
 
@@ -272,23 +350,22 @@ const hero = {
     //     }
     // },
 
-    update: function () {
+    update: function() {
         this.period = state.current == state.getReady ? 10 : 10;
         this.frame += frames % this.period == 0 ? 1 : 0;
         this.frame = this.frame % 6;
 
         if (state.current == state.getReady) {
             this.y = 360
-        }
-        else {
+        } else {
             this.speed += this.gravity;
             this.y += this.speed;
             if (this.y >= 360) {
                 this.y = 360
                 jumped = false
-                // if (state.current == state.game) {
-                //     state.current = state.over
-                // }
+                    // if (state.current == state.game) {
+                    //     state.current = state.over
+                    // }
             }
         }
     }
@@ -304,7 +381,7 @@ const getReady = {
     x: cvs.width / 2 - 173 / 2,
     y: 80,
 
-    draw: function () {
+    draw: function() {
         if (state.current == state.getReady) {
             ctx.drawImage(sprite, this.sX, this.sY, this.w, this.h, this.x, this.y, this.w, this.h)
         }
@@ -321,7 +398,7 @@ const gameOver = {
     x: cvs.width / 2 - 225 / 2,
     y: 90,
 
-    draw: function () {
+    draw: function() {
         if (state.current == state.over) {
             ctx.drawImage(sprite, this.sX, this.sY, this.w, this.h, this.x, this.y, this.w, this.h)
         }
@@ -352,7 +429,7 @@ function draw() {
 function update() {
     // enemy.update()
     hero.update()
-    // fg.update()
+        // fg.update()
 }
 
 //  loop 
@@ -364,25 +441,19 @@ function loop() {
     if (controller.up && jumped == false) {
         hero.jumping()
         jumpingSFX.play();
-    }
-
-    else if (controller.right) {
+    } else if (controller.right) {
         hero.right()
         background.x -= 3;
         if (jumped == false) {
             walkingSFX.play()
         }
-    }
-
-    else if (controller.left) {
+    } else if (controller.left) {
         hero.left()
         background.x += 3;
         if (jumped == false) {
             walkingSFX.play()
         }
-    }
-
-    else if (controller.space && slashed == false) {
+    } else if (controller.space && slashed == false) {
         hero.slash()
         background.x -= 4
         slashSFX.play()
@@ -392,7 +463,7 @@ function loop() {
 
         hero.x = 32;
 
-    } else if (hero.x > 550) {// if rectangle goes past right boundary
+    } else if (hero.x > 550) { // if rectangle goes past right boundary
 
         hero.x = 550;
 
