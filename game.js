@@ -5,8 +5,21 @@ const ctx = cvs.getContext("2d")
 //  game vars and const 
 let running = true
 let frames = 0
+let jumped = false
+let slashed = false
+let score = 0
+let enemyArr = []
+
+for (let i = 0; i < 100; i++) {
+    enemyArr.push({ x: i + 800, y: 360 })
+}
 
 // load sprite
+
+// const start = new Image()
+// start.src = "img/background.png"
+
+
 const knight = new Image()
 knight.src = "img/adventurer-v1.5-Sheet.png"
 
@@ -20,20 +33,20 @@ const hearts = new Image()
 hearts.src = "img/heart_animated_2.png"
 
 const enemySprite = new Image()
-enemySprite.src = "img/demon-attack.png"
+enemySprite.src = ""
 
 
 // Sound effects 
 const jumpingSFX = new Audio()
-jumpingSFX.volume = 0.3
+jumpingSFX.volume = 0.0
 jumpingSFX.src = "img/jumping-sfx.mp3"
 
 const walkingSFX = new Audio()
-walkingSFX.volume = 0.3
+walkingSFX.volume = 0.0
 walkingSFX.src = "img/walking-sfx.mp3"
 
 const slashSFX = new Audio()
-slashSFX.volume = 0.3
+slashSFX.volume = 0.0
 slashSFX.src = "img/sword-sfx.mp3"
 
 const music = new Audio()
@@ -47,6 +60,23 @@ const state = {
     game: 1,
     over: 2
 }
+
+// background infinite
+
+var bg = new Image();
+bg.src = "img/bg2.png";
+
+
+let background = {
+    src: "img/bg2.png",
+    x: 0,
+    y: 0
+}
+
+//  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   MAIN CODE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+// controller 
 
 document.addEventListener("click", function (e) {
     switch (state.current) {
@@ -62,23 +92,6 @@ document.addEventListener("click", function (e) {
 
     }
 })
-
-
-
-
-// background infinite
-
-var bg = new Image();
-bg.src = "img/bg2.png";
-
-
-let background = {
-    src: "img/bg2.png",
-    x: 0,
-    y: 0
-}
-
-// controller 
 
 let controller = {
 
@@ -112,56 +125,57 @@ let controller = {
 };
 
 
-let jumped = false
-let slashed = false
-
-
-let myEnemies = []
-
-
-
+// Enemies 
 
 
 const enemy = {
 
-
-    animation: [ {sX:0,sY: 0} ],
+    animation: [{ sX: 0, sY: 0 }],
     w: 40,
     h: 40,
     x: 200,
     y: 100,
+    health: 1,
+    attack: 1,
 
     frame: 0,
 
     draw: function () {
-        let enemy = arr[0]
-        ctx.drawImage(knight,0 , 0, this.w, this.h, enemy.x , enemy.y , 60, 80)
+        if (this.health <= 0) {
+            let enemy = enemyArr[0]
+            ctx.drawImage(knight, 0, 0, this.w, this.h, enemy.x, enemy.y, 60, 80)
+        }
+
+        else {
+            let enemy = enemyArr[0]
+            ctx.drawImage(knight, 0, 0, this.w, this.h, enemy.x, enemy.y, 60, 80)
+        }
     },
 
 
     right: function () {
-        arr[0].x -= 2
+        enemyArr[0].x -= 2
     },
 
-    left: function() {
-        arr[0].x += 2
+    left: function () {
+        enemyArr[0].x += 2
+    },
+
+    slashedd: function () {
+        enemyArr[0].x -= 3
+    },
+
+    update: function () {
+        this.period = state.current == state.getReady ? 10 : 10;
+        this.frame += frames % this.period == 0 ? 1 : 0;
+        this.frame = this.frame % 10;
     }
-
-    // update: function () {
-    //     this.period = state.current == state.getReady ? 10 : 10;
-    //     this.frame += frames % this.period == 0 ? 1 : 0;
-    //     this.frame = this.frame % 10;
-    // },
-
-    // spawn: function() {
-    // }
 
 }
 
-
+// Hero 
 
 const hero = {
-
 
     animation: [
         [{ sX: 50, sY: 40 },
@@ -197,7 +211,14 @@ const hero = {
         { sX: 0, sY: 520 },
         { sX: 50, sY: 520 },
         { sX: 150, sY: 480 },
-        { sX: 300, sY: 480 }]
+        { sX: 300, sY: 480 }],
+
+        [{ sX: 300, sY: 295 },
+        { sX: 0, sY: 333 },
+        { sX: 50, sY: 333 },
+        { sX: 100, sY: 333 },
+        { sX: 150, sY: 333 },
+        { sX: 200, sY: 333 }]
 
 
     ],
@@ -215,9 +236,10 @@ const hero = {
     jump: 6.5,
 
     chests: 0,
-    heath: 5,
+    health: 4,
 
     draw: function () {
+
 
         if (controller.up && this.y < 340) {
             let hero = this.animation[2][this.frame]
@@ -239,29 +261,38 @@ const hero = {
             ctx.drawImage(knight, hero.sX, hero.sY, 60, 40, this.x, this.y - 20, 75, 95)
         }
 
+        else if (this.health <= 0) {
+            let hero = this.animation[5][this.frame]
+            ctx.drawImage(knight, hero.sX, hero.sY, this.w, this.h, this.x, this.y, 60, 80)
+        }
+
         else {
             let hero = this.animation[1][this.frame];
             ctx.drawImage(knight, hero.sX, hero.sY, this.w, this.h, this.x, this.y, 60, 80)
         }
 
-        // switch (this.heath) {
+    },
 
-        //     case (this.heath = 4):// left key
-        //         ctx.drawImage(hearts, sX, sY, w, h, x, y, 60, 80);
-        //         break;
-        //     case (this.heath = 3):// left key
-        //         ctx.drawImage(hearts, sX, sY, w, h, x, y, 60, 80);
-        //         break;
-        //     case (this.heath = 2):// left key
-        //         ctx.drawImage(hearts, sX, sY, w, h, x, y, 60, 80);
-        //         break;
-        //     case (this.heath = 1):// left key
-        //         ctx.drawImage(hearts, sX, sY, w, h, x, y, 60, 80);
-        //         break;
-        //     case (this.heath = 0):// left key
-        //         ctx.drawImage(hearts, sX, sY, w, h, x, y, 60, 80);
-        //         break;
-        // }
+
+    heartsDraw: function () {
+        switch (this.health) {
+
+            case (this.health = 4):// left key
+                ctx.drawImage(hearts, 0, 0, 17, 20, 40, 450, 30, 30)
+                break;
+            case (this.health = 3):// left key
+                ctx.drawImage(hearts, 17, 0, 17, 20, 40, 450, 30, 30)
+                break;
+            case (this.health = 2):// left key
+                ctx.drawImage(hearts, 34, 0, 17, 20, 40, 450, 30, 30)
+                break;
+            case (this.health = 1):// left key
+                ctx.drawImage(hearts, 51, 0, 17, 20, 40, 450, 30, 30)
+                break;
+            case (this.health = 0):// left key
+                ctx.drawImage(hearts, 68, 0, 17, 20, 40, 450, 30, 30)
+                break;
+        }
     },
 
 
@@ -280,14 +311,35 @@ const hero = {
 
     slash: function () {
         this.x += 3
+        slashed = true
     },
 
-    collision: function() {
-        if(this.x + 25 > arr[0].x && this.x < arr[0].x + 25 && this.y + this.h > arr[0].y && this.y < arr[0].y + 25 ) {  
-            arr.shift()
-            this.x -= 30;
-            arr[0].x += 30
-            console.log(arr.length)
+    isAlive: function () {
+        if (this.health <= 0) {
+            state.current = 2
+
+            setTimeout(function () {
+                hero.w = 0
+                hero.h = 0
+            }, 750)
+        }
+    },
+
+    collision: function () {
+        if (this.x + 25 > enemyArr[0].x && this.x < enemyArr[0].x + 25 && this.y + this.h > enemyArr[0].y && this.y < enemyArr[0].y + 25 && slashed == false) {
+            console.log("hurts")
+            hero.x -= 60
+            enemyArr[0].x += 60
+            hero.health -= 1
+        }
+        else if (this.x + 25 > enemyArr[0].x && this.x < enemyArr[0].x + 25 && this.y + this.h > enemyArr[0].y && this.y < enemyArr[0].y + 25 && slashed == true) {
+            console.log("hurts him")
+            enemy.health -= 50
+            if (enemy.health <= 0) {
+                setTimeout(function () { enemyArr.shift(); }, 1000);
+            }
+            hero.x -= 60
+            enemyArr[0].x += 60
         }
 
     },
@@ -306,9 +358,6 @@ const hero = {
             if (this.y >= 360) {
                 this.y = 360
                 jumped = false
-                // if (state.current == state.game) {
-                //     state.current = state.over
-                // }
             }
         }
     }
@@ -344,6 +393,7 @@ const gameOver = {
     draw: function () {
         if (state.current == state.over) {
             ctx.drawImage(sprite, this.sX, this.sY, this.w, this.h, this.x, this.y, this.w, this.h)
+            ctx.drawImage(knight, 200, 333, 40, 40, hero.x, hero.y, 60, 80)
         }
     }
 }
@@ -360,20 +410,20 @@ function draw() {
         //context.drawImage(bg, w*background.x, 0); trippy
 
     }
-    // enemy.draw()
     enemy.draw()
     hero.draw()
     getReady.draw()
     gameOver.draw()
+    hero.heartsDraw()
 
 }
 
 //  update 
 
 function update() {
-    // enemy.update()
+    enemy.update()
     hero.update()
-    // fg.update()
+    hero.isAlive()
 }
 
 //  loop 
@@ -407,8 +457,10 @@ function loop() {
 
     else if (controller.space && slashed == false) {
         hero.slash()
+        enemy.slashedd()
         background.x -= 4
         slashSFX.play()
+        slashed = true
     }
 
     if (hero.x < 32) {
@@ -418,11 +470,12 @@ function loop() {
     } else if (hero.x > 550) {// if rectangle goes past right boundary
 
         hero.x = 550;
-
     }
 
+    setTimeout(function () {
+        slashed = false
+    }, 3000)
     hero.collision()
-
     requestAnimationFrame(loop)
 }
 
@@ -433,81 +486,57 @@ window.addEventListener("keyup", controller.keyListener);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-// var myenemies = [];
-
-
-
-//    crashWith: function(obs) {
-//        if (this.x + 20 > obs.x && this.x < obs.x + obs.width && this.y + 20 > obs.y) {
-//            myObstacles.pop();
-//            player.x -= 5
-//            if (player.x == 0) {
-//                console.log(myObstacles)
-//                alert(Enemies Killed)
-//            }
-//        }
-//    }
-
-// function obstacle() {
-   
-  
-   
-   
-  
-// let gamearea = {
-
-//    start: function() {
-
-//            // myObstacles.push(new obstacle());
-//        this.frame = 0;
-//        this.interval = setInterval(this.updateGameArea, 5)
-//        window.addEventListener("keydown", jump);
-//    },
-//    updateGameArea: function() {
-    //    for (i = 0; i < myObstacles.length; i++) {
-    //        if (player.crashWith(myObstacles[i])) {
-    //            gamearea.stop();
-    //            return;
-    //        }
-    //    }
-//        gamearea.clear();
-//        if (enemyArr.length == 0) {
-//            myObstacles.push(new obstacle());
-//            console.log(myObstacles)
-//            gamearea.frame = 1;
-//        }
-//        for (i = 0; i < myObstacles.length; i++) {
-//            myObstacles[i].x -= 4;
-//            myObstacles[i].draw();
-//        }
-//    },
-
-// }
-
-
-//  spawn: function () {
-//     if (x conditional is met) {
-//         myObstacles.push(new obstacle());
-//         console.log(myObstacles)
-//         gap = randGap();
-//         gamearea.frame = 1;
-//     }
-//  }
-
-
-
-
-
-
-
-
-
-
-
-let arr = []
-
-for (let i = 0; i < 100; i++) {
-    arr.push({x: i + 800, y: 360, health: 5 + i})
-}
-
-
+$(document).ready(function() {
+    var canvas = $('#canvasRain')[0];
+    canvas.width = 600;
+    canvas.height = 430;
+    if (canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+        var w = canvas.width;
+        var h = canvas.height;
+        ctx.strokeStyle = 'rgba(250,250,250,0.5)';
+        ctx.lineWidth = 1;
+        ctx.lineCap = 'round';
+        var init = [];
+        var maxParts = 1000;
+        for (var a = 0; a < maxParts; a++) {
+            init.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                l: Math.random() * 1,
+                xs: -4 + Math.random() * 4 + 2,
+                ys: Math.random() * 10 + 10
+            })
+        }
+        var particles = [];
+        for (var b = 0; b < maxParts; b++) {
+            particles[b] = init[b];
+        }
+        function draw() {
+            ctx.clearRect(0, 0, w, h);
+            for (var c = 0; c < particles.length; c++) {
+                var p = particles[c];
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p.x + p.l * p.xs, p.y + p.l * p.ys);
+                ctx.stroke();
+            }
+            move();
+        }
+        function move() {
+            for (var b = 0; b < particles.length; b++) {
+                var p = particles[b];
+                p.x += p.xs;
+                p.y += p.ys;
+                if (p.x > w || p.y > h) {
+                    p.x = Math.random() * w;
+                    p.y = -20;
+                }
+            }
+        }
+        setInterval(draw, 50);
+    }
+ });
+ 
+ 
+ 
