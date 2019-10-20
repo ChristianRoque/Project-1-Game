@@ -50,15 +50,8 @@ canvas {
 }
 
 .logo {
-    text-align: center;
-    width: 50%;
-    height: 10px;
-    margin: auto;
-    position: absolute;
-    top: 80px;
-    left: 0;
-    right: 0;
-    bottom: 620px;
+ width:50%;
+ margin: 10% , 10%, 10%, 10%;
 }
 
 .logo b {
