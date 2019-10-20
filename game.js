@@ -19,6 +19,7 @@ let score = 0
 let direction = false
 let enemyArr = []
 let bullets = []
+let fires = []
 let wavesArr = []
 let idle = true
 let facing = true
@@ -48,6 +49,15 @@ potionImg.src = "img/Health Potion 1.png"
 
 const bulletImg = new Image()
 bulletImg.src = "img/bullet.png"
+
+const blue = new Image()
+blue.src = "img/blue.png"
+
+const red = new Image()
+red.src = "img/red.jpg"
+
+const fireImg  = new Image()
+fireImg.src = "img/Fogo_1.png"
 
 const knight = new Image()
 knight.src = "img/adventurer-v1.5-Sheet.png"
@@ -196,6 +206,13 @@ class bulletClass {
 }
 
 class wavesClass {
+    constructor(x, y) {
+        this.x = x
+        this.y = y
+    }
+}
+
+class fireClass {
     constructor(x, y) {
         this.x = x
         this.y = y
@@ -781,6 +798,7 @@ const boss = {
     x: 0,
     y: 0,
 
+    firePath: 0,
     health: 1000,
     attack: 1,
     frame: 0,
@@ -836,7 +854,55 @@ const boss = {
         } else if (this.x > 350) {
             direction = false
         }
-    }
+    },
+
+
+    shoot: function() {
+        if (this.frame == 15) {
+            fire = new fireClass(this.x + 130, 70 )
+            fires.push(fire)
+        }
+    },
+
+    bulletMoveLeft: function() {
+        fires.forEach(fire => {
+
+            if (controller.right) {
+                fire.y += 3
+                this.firePath += 6
+            } else if (controller.left) {
+                fire.y += 3
+                this.firePath += 2
+            } else if (controller.space) {
+                fire.y += 3
+                this.firePath += 2
+            }
+             else {
+                fire.y += 4
+                this.firePath += 4
+            }
+
+            if (this.firePath >= 400) {
+                fires.shift()
+                this.firePath = 0
+            }
+            if (fire.x + 20 > hero.x && fire.x < hero.x + 20 && fire.y + 10 > hero.y && fire.y < hero.y + 10 && immune == false) {
+                console.log("it hit")
+                immune = true
+                score -= 10
+                hero.health -= 1
+                hero.x -= 3
+                hero.y -= 10
+                setTimeout(function() {
+                    immune = false;
+                }, 1100);
+
+            }
+
+            ctx.drawImage(red, 0, 0, 100, 100, fire.x + 20 , fire.y, 15, 15)
+
+        })
+    },
 
 }
 
@@ -971,6 +1037,8 @@ function loop() {
     draw();
     enemy.bulletMoveLeft()
     enemy.shoot()
+    boss.bulletMoveLeft()
+    boss.shoot()
     hero.waveMoveUp()
         // bullets.forEach(bullet => {
         //     bullet.moveLeft()
@@ -989,13 +1057,18 @@ function loop() {
         hero.h = 40
     } else if (controller.s && flying == false) {
         hero.wave()
-    } else if (controller.w && cooldown == false) {
+    } 
+    else if (controller.w && cooldown == false && hero.health != 8 ) {
+        if (hero.health == 8) {
+            healing.play()
+        }
         if (hero.potion == 1 && hero.health != 4) {
             cooldown = true
-            hero.health += 2
-            hero.potion = 0
+            hero.health = 8
+            hero.potion -= 1
             healing.play()
-        } else if (cooldown == false) {
+        }
+         else if (cooldown == false) {
             error.play()
         }
 
