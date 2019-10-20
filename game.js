@@ -1,5 +1,6 @@
 //lighting Audio on window load
 
+
 let x = document.getElementById("myAudio");
 
 function playAudio() {
@@ -1253,3 +1254,7 @@ function animloop() {
     requestAnimationFrame(animloop);
 }
 animloop();
+
+window.onkeydown = function(e) { 
+    return !(e.keyCode == 32 && e.target == document.body);
+  }; 
