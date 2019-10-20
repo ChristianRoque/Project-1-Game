@@ -7,9 +7,31 @@ body {
 
 canvas {
     display: block;
-    margin: 12% 0 0 29%;
+    margin: 0% 0 0 29%;
 }
-
+.card-group{
+    margin-right: 5%;
+    margin-left:5%;
+    margin-bottom:5%;
+}
+.ne{
+    background:black;
+    font: 2.5vh "OldTimeRomans";
+    color: white;
+    text-shadow: 0 -40px 100px, 0 0 2px, 0 0 0.5em white, 0 10px 3px #000;
+    
+    
+}
+.img{
+    height:35vh;
+}
+.card-img-top {
+    background:rgb(21, 20, 41);
+    height: 35vh;
+    width: 100%;
+    border-top-left-radius: calc(.25rem - 1px);
+    border-top-right-radius: calc(.25rem - 1px);
+}
 @keyframes slide1 {
     0% {
         margin-right: -10000px;
@@ -49,10 +71,7 @@ canvas {
     height: 60%;
 }
 
-.logo {
- width:50%;
- margin: 10% , 10%, 10%, 10%;
-}
+
 
 .logo b {
     font: 12vh "OldTimeRomans";
@@ -61,11 +80,10 @@ canvas {
 }
 
 .logo1 {
-    position: absolute;
+
     width: 25%;
     height: 10px;
-    right: 30px;
-    top: 270px;
+    
     margin: auto;
 }
 
@@ -104,17 +122,15 @@ canvas {
 }
 
 #control {
-    position: absolute;
+ 
     width: 20%;
-    top: 200px;
-    left: 100px;
+
 }
 
 #additional {
-    position: absolute;
+   
     width: 20%;
-    top: 400px;
-    left: 100px;
+   
 }
 
 @keyframes slide {
